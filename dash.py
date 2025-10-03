@@ -25,6 +25,10 @@ st.set_page_config(layout="wide")
     #Distribuição do tamanho dos apps vs downloads (Scatter plot para mostrar se apps mais leves tendem a ter mais usuários)
 
 
+#Remove as linhas da coluna type que tiverem vazias ou com 0
+df = df[df["Type"].notna()]      
+df = df[df["Type"] != "0"]    
+
 
 # Criando os filtros
 # Filtro por categoria
