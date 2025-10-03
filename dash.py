@@ -4,9 +4,10 @@ import plotly.express as px
 
 
 df = pd.read_csv("googleplaystore.csv")
+st.set_page_config(layout="wide")
 
 #FILTRAR POR
-    #Categoria
+    #Categoria   
     #Tipo de App (pago ou free)
     #Preço
     #Rating
@@ -24,5 +25,23 @@ df = pd.read_csv("googleplaystore.csv")
     #Distribuição do tamanho dos apps vs downloads (Scatter plot para mostrar se apps mais leves tendem a ter mais usuários)
 
 
-df
 
+# Criando os filtros
+# Filtro por categoria
+categorys = ["Todos"] + list(df["Category"].unique())
+category = st.sidebar.selectbox("Categoria", categorys)
+
+if category != "Todos":
+    df_filtered = df[df["Category"] == category]
+else:
+    df_filtered = df
+
+# Filtro por Método de Pagamento
+payment_methods = ["Todos"] + list(df["Type"].unique())
+payment_method = st.sidebar.selectbox("Tipo de Pagamento (Free/Paid)", payment_methods)
+
+if payment_method != "Todos":
+    df_filtered = df_filtered[df_filtered["Type"] == payment_method]
+
+# Mostrar resultado final
+df_filtered
