@@ -12,7 +12,6 @@ st.set_page_config(layout="wide")
     
 #COM BASE NO NOSSO OBJETIVO, POSSÍVEIS ANÁLISES
     #APPS com maior quantidade de downloads
-    #Apps com crescimento acelerado porém com poucos concorrentes?
     #Apps com maior rating
     #Dsitribuição de Apps por categoria (Gráfico de Barras)
     #Categorias por numero de instalações (Gráfico de barras horizontais)
@@ -26,8 +25,13 @@ st.set_page_config(layout="wide")
 #Remove as linhas da coluna type que forem diferentes de Free ou Paid
 df = df[df["Type"].isin(["Free", "Paid"])] 
 
-# ========================================================================================================================
-# Criando os filtros
+# =========================================== LIMPEZA DOS DADOS ======================================================================
+df["Installs"] = df["Installs"].str.replace(",", "", regex=False)   #Ele ta trocando onde tem , por vazio
+df["Installs"] = df["Installs"].str.replace("+", "", regex=False).astype(int)   #Tirando o "+" das linhas e convertendo para inteiro
+
+
+
+# =========================================== FILTROS ======================================================================
 # Filtro por categoria
 categorys = ["Todos"] + list(df["Category"].unique())
 category = st.sidebar.selectbox("Categoria", categorys)
@@ -37,12 +41,14 @@ if category != "Todos":
 else:
     df_filtered = df
 
+
 # Filtro por Método de Pagamento
 payment_methods = ["Todos"] + list(df["Type"].unique())
 payment_method = st.sidebar.selectbox("Tipo de Pagamento (Free/Paid)", payment_methods)
 
 if payment_method != "Todos":
     df_filtered = df_filtered[df_filtered["Type"] == payment_method]
+
 
 # Filtro de Rating
 rating_apps = st.sidebar.slider("Rating", min_value=0.0, max_value=5.0, value=(0.0, 5.0), step=0.5)
@@ -52,6 +58,21 @@ rating_min, rating_max = rating_apps
 df_filtered = df_filtered[(df_filtered["Rating"] >= rating_min) & (df_filtered["Rating"] <= rating_max)]
 
 # ===================================================================================================================
+# =========================================== GRÁFICOS ======================================================================
+#Criando as colunas
+col1, col2 = st.columns(2)
+col3, col4 = st.columns(2)
+col5, col6 = st.columns(2)
+col7, col8 = st.columns(2)
+col9, col10 = st.columns(2)
 
-# Mostrar resultado final
+
+#QUANTIDADE DE DOWNLOAD
+downloadquantity = px.bar(df_filtered, x="App", y="Installs", orientation= "v",labels="Quantidade de Downloads por App")
+col1.plotly_chart(downloadquantity)
+
+
+
+
+# Mostrar resultado final com os filtros aplicados
 df_filtered
