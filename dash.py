@@ -2,14 +2,12 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-
 df = pd.read_csv("googleplaystore.csv")
 st.set_page_config(layout="wide")
 
 #FILTRAR POR
     #Categoria   
     #Tipo de App (pago ou free)
-    #Preço
     #Rating
     
 #COM BASE NO NOSSO OBJETIVO, POSSÍVEIS ANÁLISES
@@ -28,7 +26,7 @@ st.set_page_config(layout="wide")
 #Remove as linhas da coluna type que forem diferentes de Free ou Paid
 df = df[df["Type"].isin(["Free", "Paid"])] 
 
-
+# ========================================================================================================================
 # Criando os filtros
 # Filtro por categoria
 categorys = ["Todos"] + list(df["Category"].unique())
@@ -45,6 +43,15 @@ payment_method = st.sidebar.selectbox("Tipo de Pagamento (Free/Paid)", payment_m
 
 if payment_method != "Todos":
     df_filtered = df_filtered[df_filtered["Type"] == payment_method]
+
+# Filtro de Rating
+rating_apps = st.sidebar.slider("Rating", min_value=0.0, max_value=5.0, value=(0.0, 5.0), step=0.5)
+#Separa a tupla que criamos em duas varoáveos de valor max e min
+rating_min, rating_max = rating_apps
+#Seleciona todas as linhas onde o rating é maior ou igual ao mínimo e onde o rating é menor ou igual ao máximo
+df_filtered = df_filtered[(df_filtered["Rating"] >= rating_min) & (df_filtered["Rating"] <= rating_max)]
+
+# ===================================================================================================================
 
 # Mostrar resultado final
 df_filtered
