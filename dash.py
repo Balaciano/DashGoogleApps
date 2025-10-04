@@ -29,6 +29,12 @@ df = df[df["Type"].isin(["Free", "Paid"])]
 df["Installs"] = df["Installs"].str.replace(",", "", regex=False)   #Ele ta trocando onde tem , por vazio
 df["Installs"] = df["Installs"].str.replace("+", "", regex=False).astype(int)   #Tirando o "+" das linhas e convertendo para inteiro
 
+df["Category"] = df["Category"].str.replace("_", " ", regex=False)
+
+df["Genres"] = df["Genres"].str.replace(";", " - ", regex=False)
+
+df["Last Updated"] = pd.to_datetime(df["Last Updated"])
+df["Last Updated"] = df["Last Updated"].dt.strftime("%d/%m/%Y")
 
 
 # =========================================== FILTROS ======================================================================
