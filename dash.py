@@ -73,12 +73,12 @@ col7, col8 = st.columns(2)
 col9, col10 = st.columns(2)
 
 
-#QUANTIDADE DE DOWNLOAD
-downloadquantity = px.bar(df_filtered, x="App", y="Installs", orientation= "v",labels="Quantidade de Downloads por App")
+#QUANTIDADE DE DOWNLOAD por APP
+top_apps = df_filtered.groupby("App")["Installs"].sum().sort_values(ascending=False).head(20)
+downloadquantity = px.bar(top_apps, x=top_apps.index, y=top_apps.values, orientation= "v", title="Top20 Apps mais baixados", labels={"x": "App", "y": "Número de downloads"})
 col1.plotly_chart(downloadquantity)
 
 #Quatidade de apps por categoria
-
 category_counts = df_filtered.groupby("Category")["App"].count().reset_index().sort_values("App", ascending=True) #Pega a quantidade de App por categoria, ordenando da maior quantidade para o menor 
 category_quantity = px.bar(category_counts, x="App", y="Category", orientation="h", title="Quantidade de Apps por categoria", labels={"App": "Quantidade", "Category": "Categoria"}) #Labels está mudando o valor do eixo x e y do gráfico
 col2.plotly_chart(category_quantity)
