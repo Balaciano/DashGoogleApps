@@ -6,15 +6,11 @@ df = pd.read_csv("googleplaystore.csv")
 st.set_page_config(layout="wide")
 
 
-    
-#COM BASE NO NOSSO OBJETIVO, POSSÍVEIS ANÁLISES
-    #Relação entre número de reviews e rating (Scatter plot com reviews no eixo X e rating no eixo Y para ajudar a identificar apps populares e bem avaliados
-    #Distribuição do tamanho dos apps vs downloads (Scatter plot para mostrar se apps mais leves tendem a ter mais usuários)
-
-
-
 
 # =========================================== LIMPEZA DOS DADOS ======================================================================
+#Remove as linhas da coluna type que forem diferentes de Free ou Paid
+df = df[df["Type"].isin(["Free", "Paid"])] 
+
 df["Installs"] = df["Installs"].str.replace(",", "", regex=False)   #Ele ta trocando onde tem , por vazio
 df["Installs"] = df["Installs"].str.replace("+", "", regex=False).astype(int)   #Tirando o "+" das linhas e convertendo para inteiro
 
@@ -25,8 +21,6 @@ df["Genres"] = df["Genres"].str.replace(";", " - ", regex=False)
 df["Last Updated"] = pd.to_datetime(df["Last Updated"])
 df["Last Updated"] = df["Last Updated"].dt.strftime("%d/%m/%Y")
 
-#Remove as linhas da coluna type que forem diferentes de Free ou Paid
-df = df[df["Type"].isin(["Free", "Paid"])] 
 
 #PENSAR EM ALGUMA FORMA DE TRATAR A COLUNA SIZE (DE FORMA QUE SE EU TIVER 10G e 100K, quando eu tirar essas letras, ele continue interpretando o 10G como o maior)
 
@@ -61,9 +55,7 @@ df_filtered = df_filtered[(df_filtered["Rating"] >= rating_min) & (df_filtered["
 #Criando as colunas
 col1, col2 = st.columns(2)
 col3, col4 = st.columns(2)
-col5, col6 = st.columns(2)
-col7, col8 = st.columns(2)
-col9, col10 = st.columns(2)
+
 
 
 #QUANTIDADE DE DOWNLOAD por APP (Top20)
