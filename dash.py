@@ -5,18 +5,9 @@ import plotly.express as px
 df = pd.read_csv("googleplaystore.csv")
 st.set_page_config(layout="wide")
 
-#FILTRAR POR
-    #Categoria   
-    #Tipo de App (pago ou free)
-    #Rating
+
     
 #COM BASE NO NOSSO OBJETIVO, POSSÍVEIS ANÁLISES
-    #APPS com maior quantidade de downloads    OK
-    #Apps com maior rating       OK
-    #Dsitribuição de Apps por categoria (Gráfico de Barras)    OK 
-    #Categorias por numero de instalações (Gráfico de barras horizontais)
-    #apps por número de downloads (Grafico de Ranking)
-    #Media de Rating por categoria (Para ver em quais segmentos os usuários estão mais satisfeitos)
     #Relação entre número de reviews e rating (Scatter plot com reviews no eixo X e rating no eixo Y para ajudar a identificar apps populares e bem avaliados
     #Comparação dos apps free com os pagos (Gráfico de Pizza)
     #Distribuição do tamanho dos apps vs downloads (Scatter plot para mostrar se apps mais leves tendem a ter mais usuários)
@@ -74,7 +65,7 @@ col9, col10 = st.columns(2)
 
 
 #QUANTIDADE DE DOWNLOAD por APP (Top20)
-top_apps = df_filtered.groupby("App")["Installs"].sum().sort_values(ascending=False).head(20)  
+top_apps = df_filtered.groupby("App")["Installs"].sum().sort_values(ascending=False).head(20)
 downloadquantity = px.bar(top_apps, x=top_apps.index, y=top_apps.values, orientation= "v", title="Top20 Apps mais baixados", labels={"x": "App", "y": "Número de downloads"})
 col1.plotly_chart(downloadquantity)
 
@@ -88,6 +79,13 @@ col2.plotly_chart(category_quantity)
 top_categorys = df_filtered.groupby("Category")["Installs"].sum().sort_values(ascending=True).head(10)
 category_downloads = px.bar(top_categorys, x=top_categorys.values, y=top_categorys.index, title="Downloads por categoria", labels={"x": "Número de Downloads", "y": "Categoria"})
 col3.plotly_chart(category_downloads)
+
+#MEDIA DE RATING POR CATEGORIA
+rating_filter = df_filtered.groupby("Category")["Rating"].mean().reset_index()
+rating_category = px.box(rating_filter, y="Rating", x="Category", title="Dsitribuição de rating por categoria", labels={"Rating": "Média de Rating", "Category": "Categoria"})
+col4.plotly_chart(rating_category)
+
+
 
 # Mostrar resultado final com os filtros aplicados
 df_filtered
