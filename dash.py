@@ -11,9 +11,9 @@ st.set_page_config(layout="wide")
     #Rating
     
 #COM BASE NO NOSSO OBJETIVO, POSSÍVEIS ANÁLISES
-    #APPS com maior quantidade de downloads
-    #Apps com maior rating
-    #Dsitribuição de Apps por categoria (Gráfico de Barras)
+    #APPS com maior quantidade de downloads    OK
+    #Apps com maior rating       OK
+    #Dsitribuição de Apps por categoria (Gráfico de Barras)     
     #Categorias por numero de instalações (Gráfico de barras horizontais)
     #apps por número de downloads (Grafico de Ranking)
     #Media de Rating por categoria (Para ver em quais segmentos os usuários estão mais satisfeitos)
@@ -77,7 +77,11 @@ col9, col10 = st.columns(2)
 downloadquantity = px.bar(df_filtered, x="App", y="Installs", orientation= "v",labels="Quantidade de Downloads por App")
 col1.plotly_chart(downloadquantity)
 
+#Quatidade de apps por categoria
 
+category_counts = df_filtered.groupby("Category")["App"].count().reset_index().sort_values("App", ascending=True) #Pega a quantidade de App por categoria, ordenando da maior quantidade para o menor 
+category_quantity = px.bar(category_counts, x="App", y="Category", orientation="h", title="Quantidade de Apps por categoria", labels={"App": "Quantidade", "Category": "Categoria"}) #Labels está mudando o valor do eixo x e y do gráfico
+col2.plotly_chart(category_quantity)
 
 
 # Mostrar resultado final com os filtros aplicados
