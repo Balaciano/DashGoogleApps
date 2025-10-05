@@ -9,12 +9,10 @@ st.set_page_config(layout="wide")
     
 #COM BASE NO NOSSO OBJETIVO, POSSÍVEIS ANÁLISES
     #Relação entre número de reviews e rating (Scatter plot com reviews no eixo X e rating no eixo Y para ajudar a identificar apps populares e bem avaliados
-    #Comparação dos apps free com os pagos (Gráfico de Pizza)
     #Distribuição do tamanho dos apps vs downloads (Scatter plot para mostrar se apps mais leves tendem a ter mais usuários)
 
 
-#Remove as linhas da coluna type que forem diferentes de Free ou Paid
-df = df[df["Type"].isin(["Free", "Paid"])] 
+
 
 # =========================================== LIMPEZA DOS DADOS ======================================================================
 df["Installs"] = df["Installs"].str.replace(",", "", regex=False)   #Ele ta trocando onde tem , por vazio
@@ -27,6 +25,10 @@ df["Genres"] = df["Genres"].str.replace(";", " - ", regex=False)
 df["Last Updated"] = pd.to_datetime(df["Last Updated"])
 df["Last Updated"] = df["Last Updated"].dt.strftime("%d/%m/%Y")
 
+#Remove as linhas da coluna type que forem diferentes de Free ou Paid
+df = df[df["Type"].isin(["Free", "Paid"])] 
+
+#PENSAR EM ALGUMA FORMA DE TRATAR A COLUNA SIZE (DE FORMA QUE SE EU TIVER 10G e 100K, quando eu tirar essas letras, ele continue interpretando o 10G como o maior)
 
 # =========================================== FILTROS ======================================================================
 # Filtro por categoria
@@ -84,6 +86,9 @@ col3.plotly_chart(category_downloads)
 rating_filter = df_filtered.groupby("Category")["Rating"].mean().reset_index()
 rating_category = px.box(rating_filter, y="Rating", x="Category", title="Dsitribuição de rating por categoria", labels={"Rating": "Média de Rating", "Category": "Categoria"})
 col4.plotly_chart(rating_category)
+
+#Distribuição do tamanho dos apps vs downloads
+
 
 
 
