@@ -5,7 +5,8 @@ import plotly.express as px
 df = pd.read_csv("googleplaystore.csv")
 st.set_page_config(layout="wide")
 
-
+st.title("Análise dos Aplicativos da Google Play Store")
+st.markdown("---")
 
 # =========================================== LIMPEZA DOS DADOS ======================================================================
 #Remove as linhas da coluna type que forem diferentes de Free ou Paid
@@ -25,6 +26,8 @@ df["Last Updated"] = df["Last Updated"].dt.strftime("%d/%m/%Y")
 #PENSAR EM ALGUMA FORMA DE TRATAR A COLUNA SIZE (DE FORMA QUE SE EU TIVER 10G e 100K, quando eu tirar essas letras, ele continue interpretando o 10G como o maior)
 
 # =========================================== FILTROS ======================================================================
+st.sidebar.header("Filtros")
+
 # Filtro por categoria
 categorys = ["Todos"] + list(df["Category"].unique())
 category = st.sidebar.selectbox("Categoria", categorys)
@@ -52,16 +55,18 @@ df_filtered = df_filtered[(df_filtered["Rating"] >= rating_min) & (df_filtered["
 
 # ===================================================================================================================
 # =========================================== GRÁFICOS ======================================================================
+
+#----------------------- Entendendo o mercado --------------
+st.header("Entendendo o mercado")
+
 #Criando as colunas
 col1, col2 = st.columns(2)
-col3, col4, col5 = st.columns(3)
+col3, col4 = st.columns(2)
 
 
-
-#QUANTIDADE DE DOWNLOAD por APP (Top20)
-top_apps = df_filtered.groupby("App")["Installs"].sum().sort_values(ascending=False).head(20)
-downloadquantity = px.bar(top_apps, x=top_apps.index, y=top_apps.values, orientation= "v", title="Top20 Apps mais baixados", labels={"x": "App", "y": "Número de downloads"})
-col1.plotly_chart(downloadquantity)
+#Distribuição por tipo (Free vs Paid)
+tipo_pagamento = px.pie(df_filtered, title="Distribuição por tipo (Free vs Paid)", names="Type")
+col1.plotly_chart(tipo_pagamento)
 
 #Quatidade de apps por categoria
 category_counts = df_filtered.groupby("Category")["App"].count().reset_index().sort_values("App", ascending=True) #Pega a quantidade de App por categoria, ordenando da maior quantidade para o menor 
@@ -69,22 +74,36 @@ category_quantity = px.bar(category_counts, x="App", y="Category", orientation="
 col2.plotly_chart(category_quantity)
 
 
-#CATEGORIA POR NUMERO DE Downloads (top10)
-top_categorys = df_filtered.groupby("Category")["Installs"].sum().sort_values(ascending=True).head(10)
-category_downloads = px.bar(top_categorys, x=top_categorys.values, y=top_categorys.index, title="Downloads por categoria", labels={"x": "Número de Downloads", "y": "Categoria"})
-col3.plotly_chart(category_downloads)
-
 #MEDIA DE RATING POR CATEGORIA
 rating_filter = df_filtered.groupby("Category")["Rating"].mean().reset_index()
 rating_category = px.box(rating_filter, y="Rating", x="Category", title="Dsitribuição de rating por categoria", labels={"Rating": "Média de Rating", "Category": "Categoria"})
-col4.plotly_chart(rating_category)
-
-#Distribuição por tipo (Free vs Paid)
-custo_app = px.pie(df_filtered, title="Distribuição por tipo (Free vs Paid)", names="Type")
-col5.plotly_chart(custo_app)
+col3.plotly_chart(rating_category)
 
 
+#Relação entre Reviws e Rating
+relation_reviewsAndRating = px.scatter(df_filtered, x="Rating", y="Reviews")
+col4.plotly_chart(relation_reviewsAndRating)
+
+st.markdown("---")
+
+#--------------- POPULARIDADE DOS APPS ------------
+st.header("Popularidade dos APPs")
+col5,col6 = st.columns(2)
+
+#QUANTIDADE DE DOWNLOAD por APP (Top20)
+top_apps = df_filtered.groupby("App")["Installs"].sum().sort_values(ascending=False).head(20)
+downloadquantity = px.bar(top_apps, x=top_apps.index, y=top_apps.values, orientation= "v", title="Top20 Apps mais baixados", labels={"x": "App", "y": "Número de downloads"})
+col5.plotly_chart(downloadquantity)
 
 
-# Mostrar resultado final com os filtros aplicados
-df_filtered
+#CATEGORIA POR NUMERO DE Downloads (top10)
+top_categorys = df_filtered.groupby("Category")["Installs"].sum().sort_values(ascending=True).head(10)
+category_downloads = px.bar(top_categorys, x=top_categorys.values, y=top_categorys.index, title="Downloads por categoria", labels={"x": "Número de Downloads", "y": "Categoria"})
+col6.plotly_chart(category_downloads)
+
+
+st.markdown("---")
+st.subheader("Dados Filtrados")
+st.dataframe(df_filtered)
+
+
