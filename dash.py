@@ -54,7 +54,7 @@ df_filtered = df_filtered[(df_filtered["Rating"] >= rating_min) & (df_filtered["
 # =========================================== GRÁFICOS ======================================================================
 #Criando as colunas
 col1, col2 = st.columns(2)
-col3, col4 = st.columns(2)
+col3, col4, col5 = st.columns(3)
 
 
 
@@ -79,7 +79,9 @@ rating_filter = df_filtered.groupby("Category")["Rating"].mean().reset_index()
 rating_category = px.box(rating_filter, y="Rating", x="Category", title="Dsitribuição de rating por categoria", labels={"Rating": "Média de Rating", "Category": "Categoria"})
 col4.plotly_chart(rating_category)
 
-#Distribuição do tamanho dos apps vs downloads
+#Distribuição por tipo (Free vs Paid)
+custo_app = px.pie(df_filtered, title="Distribuição por tipo (Free vs Paid)", names="Type")
+col5.plotly_chart(custo_app)
 
 
 
