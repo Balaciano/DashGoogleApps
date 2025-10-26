@@ -12,6 +12,7 @@ st.markdown("---")
 #Remove as linhas da coluna type que forem diferentes de Free ou Paid
 df = df[df["Type"].isin(["Free", "Paid"])] 
 
+
 df["Installs"] = df["Installs"].str.replace(",", "", regex=False)   #Ele ta trocando onde tem , por vazio
 df["Installs"] = df["Installs"].str.replace("+", "", regex=False).astype(int)   #Tirando o "+" das linhas e convertendo para inteiro
 
@@ -22,8 +23,11 @@ df["Genres"] = df["Genres"].str.replace(";", " - ", regex=False)
 df["Last Updated"] = pd.to_datetime(df["Last Updated"])
 df["Last Updated"] = df["Last Updated"].dt.strftime("%d/%m/%Y")
 
+df["Price"] = df["Price"].str.replace("$", "", regex=False).astype(float)
+
 
 #PENSAR EM ALGUMA FORMA DE TRATAR A COLUNA SIZE (DE FORMA QUE SE EU TIVER 10G e 100K, quando eu tirar essas letras, ele continue interpretando o 10G como o maior)
+
 
 # =========================================== FILTROS ======================================================================
 st.sidebar.header("Filtros")
@@ -88,7 +92,8 @@ st.markdown("---")
 
 #--------------- POPULARIDADE DOS APPS ------------
 st.header("Popularidade dos APPs")
-col5,col6 = st.columns(2)
+col5,col6, col7 = st.columns(3)
+
 
 #QUANTIDADE DE DOWNLOAD por APP (Top20)
 top_apps = df_filtered.groupby("App")["Installs"].sum().sort_values(ascending=False).head(20)
@@ -100,6 +105,32 @@ col5.plotly_chart(downloadquantity)
 top_categorys = df_filtered.groupby("Category")["Installs"].sum().sort_values(ascending=True).head(10)
 category_downloads = px.bar(top_categorys, x=top_categorys.values, y=top_categorys.index, title="Downloads por categoria", labels={"x": "Número de Downloads", "y": "Categoria"})
 col6.plotly_chart(category_downloads)
+
+
+#RELAÇÃO ENTRE O SIZE E QUANTIDADE DE DOWNLOADS --> saber se apss mais leves tem mais downloads
+
+
+
+#--------------- Análise Financeira (Somente Apps pagos) ------------
+st.markdown("---")
+st.subheader("Análise Financeira (Apps Pagos)")
+apps_pagos = df_filtered[df_filtered["Type"] == "Paid"]
+
+col8, col9, col10 = st.columns(3)
+
+#PREÇO MEDIO POR CATEGORIA
+precomedioporcateg = apps_pagos.groupby("Category")["Price"].mean().sort_values(ascending=False).head(20)
+precoporcateg = px.bar(precomedioporcateg, x=precomedioporcateg.values, y=precomedioporcateg.index, title="Preço medio por categoria", labels={"x": "Preço médio", "y": "Categoria"})
+col8.plotly_chart(precoporcateg)
+
+#-------------- Oportunidades e Tendências ---------------
+#Atualizações mais recentes
+
+#
+
+
+
+
 
 
 st.markdown("---")
