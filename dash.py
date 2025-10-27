@@ -6,7 +6,6 @@ df = pd.read_csv("googleplaystore.csv")
 st.set_page_config(layout="wide")
 
 st.title("Análise dos Aplicativos da Google Play Store")
-st.markdown("---")
 
 # =========================================== LIMPEZA DOS DADOS ======================================================================
 #Remove as linhas da coluna type que forem diferentes de Free ou Paid
@@ -61,6 +60,13 @@ df_filtered = df_filtered[(df_filtered["Rating"] >= rating_min) & (df_filtered["
 
 # ===================================================================================================================
 # =========================================== GRÁFICOS ======================================================================
+
+colA, colB, colC = st.columns(3)
+colA.metric("Total de Apps", len(df_filtered))
+colB.metric("Downloads Totais", f"{df_filtered['Installs'].sum():,}")
+colC.metric("Média de Rating", round(df_filtered['Rating'].mean(), 2))
+st.markdown("---")
+
 
 #----------------------- Entendendo o mercado --------------
 st.header("Entendendo o mercado")
