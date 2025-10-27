@@ -20,8 +20,10 @@ df["Category"] = df["Category"].str.replace("_", " ", regex=False)
 
 df["Genres"] = df["Genres"].str.replace(";", " - ", regex=False)
 
-df["Last Updated"] = pd.to_datetime(df["Last Updated"])
-df["Last Updated"] = df["Last Updated"].dt.strftime("%d/%m/%Y")
+df["Last Updated"] = pd.to_datetime(df["Last Updated"], errors="coerce")  #erros = "coerce" transforma valores inválidos em NaT (data nula, que pode ser removida depois).
+#Criando uma nova coluna chamada AnoMes
+df["AnoMes"] = df["Last Updated"].dt.to_period("M").astype(str)
+
 
 df["Price"] = df["Price"].str.replace("$", "", regex=False).astype(float)
 
@@ -123,10 +125,38 @@ precomedioporcateg = apps_pagos.groupby("Category")["Price"].mean().sort_values(
 precoporcateg = px.bar(precomedioporcateg, x=precomedioporcateg.values, y=precomedioporcateg.index, title="Preço medio por categoria", labels={"x": "Preço médio", "y": "Categoria"})
 col8.plotly_chart(precoporcateg)
 
-#-------------- Oportunidades e Tendências ---------------
-#Atualizações mais recentes
+#Relação entre preço e rating
 
-#
+
+#Receita potencial
+
+#-------------- Oportunidades e Tendências ---------------
+st.markdown("---")
+st.subheader("Oportunidades e Tendências")
+col11, col12, col13 = st.columns(3)
+
+#Atualizações mais recentes
+apps_por_mes = df_filtered.groupby("AnoMes")["App"].count().reset_index().sort_values("AnoMes")
+
+apps_por_mes.rename(columns={"App": "Quantidade de Apps"}, inplace=True)
+
+apps_por_mes["AnoMes"] = pd.to_datetime(apps_por_mes["AnoMes"])
+apps_por_mes = apps_por_mes.sort_values("AnoMes")
+
+atualizacoes = px.bar(
+    apps_por_mes,
+    x="AnoMes",
+    y="Quantidade de Apps",
+    title="Atualizações de Apps ao Longo do Tempo",
+    labels={"AnoMes": "Ano/Mês", "Quantidade de Apps": "Quantidade de Atualizações"},
+)
+col11.plotly_chart(atualizacoes)
+
+#Relação entre frequência de atualização e rating
+
+#Quais faixas etárias são mais utilizadas?
+
+
 
 
 
