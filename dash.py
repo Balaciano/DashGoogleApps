@@ -126,9 +126,14 @@ precoporcateg = px.bar(precomedioporcateg, x=precomedioporcateg.values, y=precom
 col8.plotly_chart(precoporcateg)
 
 #Relação entre preço e rating
-
+relation_precoAndRating = px.scatter(apps_pagos, x="Price", y="Rating", title="Relação entre preço e rating")
+col9.plotly_chart(relation_precoAndRating)
 
 #Receita potencial
+apps_pagos["Receita"] = apps_pagos["Price"] * apps_pagos["Installs"]
+receita_por_categoria = apps_pagos.groupby("Category")["Receita"].sum().reset_index().sort_values(by="Receita", ascending=False).head(10)
+receita = px.bar(receita_por_categoria, x="Receita", y="Category", orientation="h", title="Receita por categoria")
+col10.plotly_chart(receita)
 
 #-------------- Oportunidades e Tendências ---------------
 st.markdown("---")
