@@ -138,7 +138,7 @@ col10.plotly_chart(receita)
 #-------------- Oportunidades e Tendências ---------------
 st.markdown("---")
 st.subheader("Oportunidades e Tendências")
-col11, col12, col13 = st.columns(3)
+col11, col12 = st.columns(2)
 
 #Atualizações mais recentes
 apps_por_mes = df_filtered.groupby("AnoMes")["App"].count().reset_index().sort_values("AnoMes")
@@ -157,11 +157,11 @@ atualizacoes = px.bar(
 )
 col11.plotly_chart(atualizacoes)
 
-#Relação entre frequência de atualização e rating
 
 #Quais faixas etárias são mais utilizadas?
-
-
+faixa_rating = df_filtered.groupby("Content Rating")["Rating"].mean().reset_index().sort_values(by="Rating", ascending=True)
+chart_faixa_por_rating =px.bar(faixa_rating, x="Rating", y="Content Rating", title="Melhores avaliações por faixa etária", labels={"y": "Faixa etária"})
+col12.plotly_chart(chart_faixa_por_rating)
 
 
 
