@@ -28,8 +28,15 @@ df["Price"] = df["Price"].str.replace("$", "", regex=False).astype(float)
 
 
 #PENSAR EM ALGUMA FORMA DE TRATAR A COLUNA SIZE (DE FORMA QUE SE EU TIVER 10G e 100K, quando eu tirar essas letras, ele continue interpretando o 10G como o maior)
+df["Size"] = df["Size"].astype(str)
 
+#Cria uma nova coluna e coloca todos os valores da nova coluna que não forem "M" para NaN
+df["Size (Bytes)"] = pd.to_numeric(df["Size"].str.replace("M", ""), errors="coerce") * 1_000_000
+#Todas que terminaram na coluna Size com K, vai na nova coluna e troca pelo valor
+df.loc[df["Size"].str.endswith("K"), "Size (Bytes)"] = pd.to_numeric(df["Size"].str.replace("K", ""), errors="coerce") * 1_000
+df.loc[df["Size"].str.endswith("G"), "Size (Bytes)"] = pd.to_numeric(df["Size"].str.replace("G", ""), errors="coerce") * 1_000_000_000
 
+df = df.dropna(subset=["Size (Bytes)"])
 # =========================================== FILTROS ======================================================================
 st.sidebar.header("Filtros")
 
