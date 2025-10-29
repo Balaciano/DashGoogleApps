@@ -27,8 +27,6 @@ df["AnoMes"] = df["Last Updated"].dt.to_period("M").astype(str)
 df["Price"] = df["Price"].str.replace("$", "", regex=False).astype(float)
 
 
-#PENSAR EM ALGUMA FORMA DE TRATAR A COLUNA SIZE (DE FORMA QUE SE EU TIVER 10G e 100K, quando eu tirar essas letras, ele continue interpretando o 10G como o maior)
-df["Size"] = df["Size"].astype(str)
 
 #Cria uma nova coluna e coloca todos os valores da nova coluna que não forem "M" para NaN
 df["Size (Bytes)"] = pd.to_numeric(df["Size"].str.replace("M", ""), errors="coerce") * 1_000_000
@@ -37,7 +35,11 @@ df.loc[df["Size"].str.endswith("K"), "Size (Bytes)"] = pd.to_numeric(df["Size"].
 df.loc[df["Size"].str.endswith("G"), "Size (Bytes)"] = pd.to_numeric(df["Size"].str.replace("G", ""), errors="coerce") * 1_000_000_000
 
 df = df.dropna(subset=["Size (Bytes)"])
+
+
 # =========================================== FILTROS ======================================================================
+
+
 st.sidebar.header("Filtros")
 
 # Filtro por categoria
@@ -64,6 +66,8 @@ rating_apps = st.sidebar.slider("Rating", min_value=0.0, max_value=5.0, value=(0
 rating_min, rating_max = rating_apps
 #Seleciona todas as linhas onde o rating é maior ou igual ao mínimo e onde o rating é menor ou igual ao máximo
 df_filtered = df_filtered[(df_filtered["Rating"] >= rating_min) & (df_filtered["Rating"] <= rating_max)]
+
+
 
 # ===================================================================================================================
 # =========================================== GRÁFICOS ======================================================================
@@ -123,8 +127,22 @@ col6.plotly_chart(category_downloads)
 
 
 #RELAÇÃO ENTRE O SIZE E QUANTIDADE DE DOWNLOADS --> saber se apss mais leves tem mais downloads
+#Ver o minimo e maximo do Size
+st.write("Tamanho Máximo: " f'{df["Size (Bytes)"].max()}')   
+st.write("Tamanho Míimo: " f'{df["Size (Bytes)"].min()}')   
 
+#Separar em classes de intervalos
+bins = [10_000_000, 30_000_000, 60_000_000, 100_000_000]
+labels = ["Até 30MB", "30–60MB", "60–100MB"]
 
+df_filtered["Tamanho"] = pd.cut(df["Size (Bytes)"], bins=bins, labels=labels, include_lowest=True)
+
+#Agrupar pelos intervalos
+relation_SizeAndInstalls = df_filtered.groupby("Tamanho")["Installs"].sum().reset_index()
+
+#Criar o gráfico
+chart_Size_Installs = px.bar(relation_SizeAndInstalls, x="Tamanho", y="Installs", title="Downloads por tamanho do app", labels={"x": "Tamanho do APP", "y": "Quantidade de Downloads"})
+col7.plotly_chart(chart_Size_Installs)
 
 #--------------- Análise Financeira (Somente Apps pagos) ------------
 st.markdown("---")
